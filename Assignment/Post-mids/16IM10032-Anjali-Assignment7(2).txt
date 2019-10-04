@@ -1,0 +1,101 @@
+Question 2:- 
+
+
+# coding: utf-8
+
+# In[145]:
+
+
+import numpy as np
+import math
+import random
+
+
+# In[146]:
+
+
+def fitness(x1,x2):
+    s1 = 0
+    s2 = 0
+    for i in range(1,6):
+        s1 = s1 + i*math.cos((i+1)*x1 + i)
+        s2 = s2 + i*math.cos((i+1)*x2 + i)
+    f = s1*s2
+    return f
+
+
+# In[147]:
+
+
+def position(r):
+    x = 255*(r)
+    return x
+
+
+# In[148]:
+
+
+def velocity(r):
+    x = r - 0.5
+    return x
+
+
+# In[149]:
+
+
+w = 0.7
+c1 = 0.2
+c2 = 0.6
+n = 10
+e = 100
+
+
+# In[150]:
+
+
+f = np.zeros((n))
+r1 = np.random.rand(n,1)
+r2 = np.random.rand(n,1)
+r3 = np.random.rand(n,1)
+r4 = np.random.rand(n,1)
+x1 = position(r1)
+x2 = position(r2)
+v1 = velocity(r3)
+v2 = velocity(r4)
+for i in range(0,n):
+    f[i] = fitness(x1[i],x2[i])
+l_best_fit = f
+l_best_position1 = x1
+l_best_position2 = x2
+g_best_fit = np.min(f)
+g_best_position1 = x1[np.argmin(f)]
+g_best_position2 = x2[np.argmin(f)]
+
+
+# In[151]:
+
+
+for j in range(0,e):
+    v1 = w*v + c2*np.multiply(np.random.rand(n,1),(l_best_position1 - x1)) + c1*np.multiply(np.random.rand(n,1),(g_best_position1 - x1))
+    v2 = w*v + c2*np.multiply(np.random.rand(n,1),(l_best_position2 - x2)) + c1*np.multiply(np.random.rand(n,1),(g_best_position2 - x2))
+    x1 = x1 + v1
+    x2 = x2 + v2
+    for i in range(0,n):
+        f[i] = fitness(x1[i],x2[i])
+        if(f[i]<l_best_fit[i]):
+            l_best_position1[i] = x1[i]
+            l_best_position2[i] = x2[i]
+            l_best_fit[i] = f[i]
+        if(f[i]<g_best_fit):
+            g_best_fit = f[i]
+            g_best_position1 = x1[i]
+            g_best_position2 = x2[i]
+print(g_best_fit)
+
+
+# In[152]:
+
+
+print(g_best_position1)
+print(g_best_position2)
+
