@@ -1,0 +1,48 @@
+Question 1:-
+proc ga seed = 12 maxiter = 340000;
+function contractor(selected[*]);
+array p[2] /nosym;
+call ReadMember(selected,1,p);
+x = p[1];
+y = p[2];
+sum = 20 + x**2 - 10*cos(2*3.14*x) + y**2 - 10*cos(2*3.14*y);
+return(-1*sum);
+endsub;
+
+call SetEncoding('R2');
+array LowerBound[2]/nosym(-10 -10);
+array UpperBound[2]/nosym(100 100);
+call SetBounds(LowerBound, UpperBound);
+call SetObjFunc('contractor',1);
+call SetMutProb(0.15);
+call SetMut('uniform', 'nchange',1);
+call SetSel('tournament', 'size',2);
+call SetElite(7);
+call Initialize('DEFAULT', 120);
+run;
+quit;
+
+
+Question 2:-
+data locations;
+input d1-d5;
+datalines;
+   0 12 10 19 8
+   12 0 3 7 19
+   10 3 0 6 20
+   19 7 6 0 4
+   8 19 20 4 0
+;
+proc ga matrix1 = locations seed = 5554;
+   call SetEncoding('S5');
+   ncities = 5;
+   call SetObj('TSP',0,'distances', matrix1);
+   call SetCross('Order');
+   call SetMut('Invert');
+   call SetMutProb(0.05);
+   call SetCrossProb(0.8);
+   call SetElite(1);
+   call Initialize('DEFAULT',200);
+   call ContinueFor(140);
+run;
+quit;

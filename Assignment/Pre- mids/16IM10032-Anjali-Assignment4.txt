@@ -1,0 +1,64 @@
+##Question 1
+proc iml;
+p={a x y z};
+q={q w e r};
+start fact(x);
+	k=1;
+	do i=1 to x;
+		k=k*i;
+	end;
+	return k;
+finish;
+k=fact(4);
+print k;
+do i=1 to 4;
+	do j=1 to 4;
+		if j^=i then do;
+			do k=1 to 4;
+				if k^=i && k^=j then do;
+					do l=1 to 4;
+						if l^=k && l^=j && l^=i then do;
+							q[1]=p[i];
+							q[2]=p[j];
+							q[3]=p[k];
+							q[4]=p[l];
+							print q;
+						end;
+					end;
+				end;
+			end;
+		end;	
+	end;
+end;
+
+
+
+#Question 2
+Libname mylib1 'E:\16IM10032\30-01-2019';
+
+proc fcmp
+outlib = mylib1.dataset1.package1Math;
+	function fibo(n);
+		if n <= 1 then
+			return (1);
+		else
+		return(fibo(n-1)+ fibo(n-2));
+	endsub;
+	options cmplib = mylib1.dataset1;
+Quit;
+
+data mylib1.fibs;
+	n = 5;
+	fibs= fibo(n);
+	put fibs = ;
+run;
+quit;
+data mylib1.fibs;
+ n = 5;
+ do i = 1 to n;
+ 	fibs = fibo(i);
+	output;
+	put fibs = ;
+end;
+run;
+quit;

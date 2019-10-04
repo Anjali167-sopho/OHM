@@ -1,0 +1,43 @@
+proc optmodel;
+set food = {"bread","milk","cheese","potato","fish","yogurt"};
+set ing = {"protein","fat","carbs","calories"};
+number cost{food} = [2 3.5 8 1.5 11 1];
+number c{ing,food} = [4 8 7 1.3 8 9.2 
+					1 5 9 0.1 7 1
+					15 11.7 0.4 22.6 0 17
+					90 120 106 97 130 180];
+var x{food} >= 0;
+min costs = sum{i in food}cost[i]*x[i];
+con cal:sum{i in food}x[i]*c["calories",i] >=300;
+con carb:sum{i in food}x[i]*c["carbs",i] >=10;
+con pro:sum{i in food}x[i]*c["protein",i] <=10;
+con fat:sum{i in food}x[i]*c["fat",i] >=8;
+con min_fish: x["fish"]>=0.5;
+con max_milk: x["milk"]<=1;
+solve;
+print x costs;
+quit;
+
+
+proc optmodel;
+set crate = {'A','B','C','D','E'};
+number weight{crate} = [500 1500 2100 600 400];
+number volume{crate} = [25 15 13 20 16];
+number value{crate} = [50000 60000 90000 40000 30000];
+set segment = {"front","middle","back"};
+number avail_vol{segment} = [200 500 300];
+number weight_cap{segment} = [8000 20000 6000];
+var x{i in segment,j in crate} >=0 INTEGER;
+max values = sum{i in segment, j in crate} value[j]*x[i,j];
+con constr1: sum{j in crate}x["front",j]*weight[j] + sum{j in crate}x["back",j]*weight[j] - sum{j in crate}x["middle",j]*weight[j]<=0;
+con constr2: 2*(sum{j in crate}x["front",j]*weight[j] + sum{j in crate}x["back",j]*weight[j]) - sum{j in crate}x["middle",j]*weight[j]>=0;
+con A_total: sum{i in segment}x[i,'A']<=12;
+con B_total: sum{i in segment}x[i,'B']<=8;
+con C_total: sum{i in segment}x[i,'C']<=22;
+con D_total: sum{i in segment}x[i,'D']<=15;
+con E_total: sum{i in segment}x[i,'E']<=11;
+con weight_caps{i in segment}: sum{j in crate}x[i,j]*weight[j]<=weight_cap[i];
+con avail_vols{i in segment}: sum{j in crate}x[i,j]*volume[j]<=avail_vol[i];
+solve with milp;
+print x values;
+quit;
