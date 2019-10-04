@@ -1,0 +1,93 @@
+
+# coding: utf-8
+
+# In[40]:
+
+
+import numpy as np
+import math
+import random
+
+
+# In[41]:
+
+
+def fitness_function(x1,x2):
+    f_x = 28*x1 + 21*x2 + 0.25*x2**2
+    g1 = x1 + x2
+    g2 = 0.5*x1 + 0.4*x2
+    f = f_x - 7000*max(0,g1-1000) - 70000*max(0,g2-500)
+    return f
+
+
+# In[42]:
+
+
+n = 5000
+c = 0.8
+T = 100000
+
+
+# In[43]:
+
+
+def sa1(T,n,c):
+    final_temp= 1
+    X1 = np.random.randint(0,1000,size=2)
+    initial_fitness = fitness_function(X1[0],X1[1])
+    delta_fitness = 0
+    range_x = (1000)/2
+    while(T>final_temp):
+        for i in range(0,n):
+            x1 = X1[0] + random.randint(-1*range_x,1*range_x)
+            x2 = X1[1] + random.randint(-1*range_x,1*range_x)
+            while((x1<0 or x1>1000) or (x2<0 or x2>1000)):
+                x1 = X1[0] + random.randint(-1*range_x,1*range_x)
+                x2 = X1[1] + random.randint(-1*range_x,1*range_x)
+            fitness_value = fitness_function(x1,x2)
+            delta_fitness = fitness_value - initial_fitness
+            if(delta_fitness>=0):
+                X1[0] = x1
+                X1[1] = x2
+                initial_fitness = fitness_value
+            else:
+                random_number = random.random()
+                try:
+                    p = math.exp(-1*delta_fitness/T)
+                    if(p>random_number):
+                        X1[0] = x1
+                        X1[1] = x2
+                        initial_fitness = fitness_value
+                except OverflowError:
+                    continue
+        print(initial_fitness)
+        T = T*c
+    return X1
+
+
+# In[44]:
+
+
+x1 = sa1(T,n,c)
+
+
+# In[45]:
+
+
+print(x1[0],x1[1])
+
+
+# In[46]:
+
+
+g1 = x1[0] + x1[1]
+g2 = 0.5*x1[0] + 0.4*x1[1]
+print(g1,g2)
+
+
+# In[47]:
+
+
+f_x = 28*x1[0] + 21*x1[1] + 0.25*x1[1]**2
+print(f_x)
+

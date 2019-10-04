@@ -1,0 +1,108 @@
+
+# coding: utf-8
+
+# In[18]:
+
+
+import numpy as np
+import math
+import random
+
+
+# In[19]:
+
+
+def fitness_function(x1,x2,x3,x4,x5):
+    f_x = 5.3578547*x3**2 + 0.8356891*x1*x5 + 37.293239*x1 - 40792.141
+    g1 = 85.334407 + 0.0056858*x2*x5 + 0.00026*x1*x4 - 0.0022053*x3*x5
+    g2 = 80.51249 + 0.0071317*x2*x5 + 0.0029955*x1*x2 + 0.0021813*x3**2
+    g3 = 9.300961 + 0.0047026*x3*x5 + 0.0012547*x1*x3 + 0.0019085*x3*x4
+    l = 10000000000
+    f = f_x + -1*l*min(0,g1) + 1*l*max(0,g1-92) + -1*l*min(0,g2-90) + 1*l*max(0,g2-110) + -1*l*min(0,g3-20) + 1*l*max(0,g3-25)
+    return f
+
+
+# In[20]:
+
+
+n = 50000
+c = 0.8
+T = 1000000
+
+
+# In[21]:
+
+
+def sa1(T,n,c):
+    final_temp= 1
+    X1 = 78 + random.random()*(102-78)
+    X2 = 33 + random.random()*(45-33)
+    X3 = 27 + random.random()*(45-27)
+    X4 = 27 + random.random()*(45-27)
+    X5 = 27 + random.random()*(45-27)
+    range_x1 = (102-78)/2
+    range_x2 = (45-33)/2
+    range_x3 = (45-27)/2
+    range_x4 = (45-27)/2
+    range_x5 = (45-27)/2
+    initial_fitness = fitness_function(X1,X2,X3,X4,X5)
+    delta_fitness = 0
+    while(T>final_temp):
+        for i in range(0,n):
+            x1 = X1 + random.uniform(-1,1)*range_x1
+            x2 = X2 + random.uniform(-1,1)*range_x2
+            x3 = X3 + random.uniform(-1,1)*range_x3
+            x4 = X4 + random.uniform(-1,1)*range_x4
+            x5 = X5 + random.uniform(-1,1)*range_x5
+            while((x1<78 or x1>102) or (x2<33 or x2>45) or (x3<27 or x3>45) or (x4<27 or x4>45) or (x5<27 or x5>45)):
+                x1 = X1 + random.uniform(-1,1)*range_x1
+                x2 = X2 + random.uniform(-1,1)*range_x2
+                x3 = X3 + random.uniform(-1,1)*range_x3
+                x4 = X4 + random.uniform(-1,1)*range_x4
+                x5 = X5 + random.uniform(-1,1)*range_x5
+            fitness_value = fitness_function(x1,x2,x3,x4,x5)
+            delta_fitness = fitness_value - initial_fitness
+            if(delta_fitness<=0):
+                X1 = x1
+                X2 = x2
+                X3 = x3
+                X4 = x4
+                X5 = x5 
+                initial_fitness = fitness_value
+            else:
+                random_number = random.random()
+                p = math.exp(-1*delta_fitness/T)
+                if(p>random_number):
+                    X1 = x1
+                    X2 = x2
+                    X3 = x3
+                    X4 = x4
+                    X5 = x5 
+                    initial_fitness = fitness_value
+        print(initial_fitness)
+        T = T*c
+    return X1,X2,X3,X4,X5
+
+
+# In[22]:
+
+
+x1,x2,x3,x4,x5 = sa1(T,n,c)
+
+
+# In[23]:
+
+
+g1 = 85.334407 + 0.0056858*x2*x5 + 0.00026*x1*x4 - 0.0022053*x3*x5
+g2 = 80.51249 + 0.0071317*x2*x5 + 0.0029955*x1*x2 + 0.0021813*x3**2
+g3 = 9.300961 + 0.0047026*x3*x5 + 0.0012547*x1*x3 + 0.0019085*x3*x4
+print(g1,g2,g3)
+print(x1,x2,x3,x4,x5)
+
+
+# In[24]:
+
+
+f_x = 5.3578547*x3**2 + 0.8356891*x1*x5 + 37.293239*x1 - 40792.141
+print(f_x)
+
