@@ -1,0 +1,135 @@
+
+# coding: utf-8
+
+# In[192]:
+
+
+import numpy as np
+import random
+import math
+
+
+# In[193]:
+
+
+n_ants = 1000
+int_pheromone = 1
+alpha = 1
+beta = 1
+pher_evap = .1
+Q = 5
+
+
+# In[194]:
+
+
+coord = np.array([[0.0333692,0.9925079],
+[0.6020896,0.0168807],
+[0.1532083,0.7020444],
+[0.3181124,0.1469288],
+[0.1878440,0.8679120],
+[0.9786112,0.4925364],
+[0.7918010,0.7943144],
+[0.5145329,0.0363478],
+[0.5500754,0.8324617],
+[0.3893757,0.6635483],
+[0.9641841,0.6400201],
+[0.7718126,0.5463923],
+[0.7549037,0.4584584],
+[0.2837881,0.7733415],
+[0.3308411,0.1974851],
+[0.7977221,0.1193149],
+[0.3221207,0.7930478],
+[0.9201035,0.1186234],
+[0.2397964,0.1448552],
+[0.3967470,0.6716172]])
+
+
+# In[195]:
+
+
+def eucledian_distance(coord):
+    distances = np.zeros((20,20),dtype = float)
+    for i in range(0,coord.shape[0]):
+        for j in range(i+1,coord.shape[0]):
+            distance = ((coord[i][0]-coord[j][0])**2 + (coord[i][1]-coord[j][1])**2)**0.5
+            distances[i][j] = distance
+            distances[j][i] = distance
+    return distances
+
+
+# In[232]:
+
+
+d = eucledian_distance(coord)
+
+
+# In[243]:
+
+
+def tabu_matrix(n):
+    tabu = np.ones((n),dtype = float)
+    for i in range(0,n):
+        tabu[i]= 1
+    return tabu
+
+
+# In[244]:
+
+
+pheromone = np.multiply(np.ones((20,20),dtype = float),int_pheromone)
+best_route = []
+best_route_length = 100
+for i in range(n_ants):
+    initial_node = random.randint(0,19)
+    tabu = tabu_matrix(20)
+    route = []
+    route.append(initial_node)
+    curr_node = initial_node
+    count = 1
+    route_length = 0
+    tabu[initial_node] = 0
+    while(count!=20):
+        p = np.array(pheromone[curr_node,:])
+        #print(p)
+        for i in range(0,20):
+            if(tabu[i] == 1):
+                p[i] = p[i]**alpha/d[curr_node][i]**beta
+            else:
+                p[i] = 0
+        max_sum = np.sum(p,axis = 0)
+        p= p/max_sum
+        roulette_wheel = random.random()
+        sums = 0
+        for i in range(0,20):
+            if(tabu[i] == 1):
+                sums = sums + p[i]
+                if(sums>=roulette_wheel):
+                    next_node = i
+                    break
+        route_length += d[curr_node][next_node]
+        tabu[next_node] = 0
+        curr_node = next_node
+        route.append(curr_node)
+        count += 1 
+    #print(route_length)
+    if(best_route_length>route_length):
+        best_route_length = route_length
+        best_route = route
+    for i in range(0,len(route)-1):
+        updated_pher = (1-pher_evap)*pheromone[route[i]][route[i+1]] + Q/route_length
+        pheromone[route[i]][route[i+1]] = updated_pher
+        pheromone[route[i+1]][route[i]] = updated_pher
+
+
+# In[245]:
+
+
+print(best_route_length)
+
+
+# In[246]:
+
+
+print(best_route)
+
