@@ -1,0 +1,78 @@
+
+# coding: utf-8
+
+# In[216]:
+
+
+import numpy as np
+import random
+import math
+
+
+# In[217]:
+
+
+def fitness_function(x1,x2):
+    sum1 = 0
+    sum2 = 0 
+    for i in range(0,5):
+        sum1 = sum1 + (i+1)*math.cos(((i+2)*x1) + i + 1)
+    for i in range(0,5):
+        sum2 = sum2 + (i+1)*math.cos(((i+2)*x2) + i + 1)
+    sums = sum1*sum2
+    return sums
+
+
+# In[218]:
+
+
+n = 500
+c = 0.5
+T = 10000
+
+
+# In[219]:
+
+
+def sa1(T,n,c):
+    final_temp= 1
+    X1 = np.random.random(size=(2,1))*255
+    initial_fitness = fitness_function(X1[0],X1[1])
+    delta_fitness = 0
+    range_x = (0 + 255)/2
+    while(T>final_temp):
+        for i in range(0,n):
+            x1 = X1[0] + random.uniform(-1,1)*range_x
+            x2 = X1[1] + random.uniform(-1,1)*range_x
+            while((x1<0 or x1>255) or (x2<0 or x2>255)):
+                x1 = X1[0] + random.uniform(-1,1)*range_x
+                x2 = X1[1] + random.uniform(-1,1)*range_x
+            fitness_value = fitness_function(x1,x2)
+            delta_fitness = fitness_value - initial_fitness
+            if(delta_fitness<=0):
+                X1[0] = x1
+                X1[1] = x2
+                initial_fitness = fitness_value
+            else:
+                random_number = random.random()
+                p = math.exp(-1*delta_fitness/T)
+                if(p>random_number):
+                    X1[0] = x1
+                    X1[1] = x2
+                    initial_fitness = fitness_value
+        print(initial_fitness)
+        T = T*c
+    return X1
+
+
+# In[220]:
+
+
+X = sa1(T,n,c)
+
+
+# In[221]:
+
+
+print(fitness_function(X[0],X[1]))
+
