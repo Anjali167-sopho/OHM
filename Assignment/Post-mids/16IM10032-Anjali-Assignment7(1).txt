@@ -1,0 +1,85 @@
+Question 1:-
+
+
+# coding: utf-8
+
+# In[29]:
+
+
+import numpy as np
+import math
+import random
+
+
+# In[30]:
+
+
+def fitness(x):
+    f = 1 - x**2 + 2*x
+    return f
+
+
+# In[31]:
+
+
+def position(r):
+    x = 10*(r - 0.5)
+    return x
+
+
+# In[32]:
+
+
+def velocity(r):
+    x = r - 0.5
+    return x
+
+
+# In[45]:
+
+
+w = 0.7
+c1 = 0.2
+c2 = 0.6
+n = 10
+e = 100
+
+
+# In[46]:
+
+
+f = np.zeros((n))
+r1 = np.random.rand(n,1)
+r2 = np.random.rand(n,1)
+x = position(r1)
+v = velocity(r2)
+for i in range(0,n):
+    f[i] = fitness(x[i])
+l_best_fit = f
+l_best_position = x
+g_best_fit = np.max(f)
+g_best_position = r1[np.argmax(f)]
+
+
+# In[47]:
+
+
+for j in range(0,e):
+    v = w*v + c2*np.multiply(np.random.rand(n,1),(l_best_position - x)) + c1*np.multiply(np.random.rand(n,1),(g_best_position - x))
+    x = x + v
+    for i in range(0,n):
+        f[i] = fitness(x[i])
+        if(f[i]>l_best_fit[i]):
+            l_best_position[i] = x[i]
+            l_best_fit[i] = f[i]
+        if(f[i]>g_best_fit):
+            g_best_fit = f[i]
+            g_best_position = x[i]
+print(g_best_fit)
+
+
+# In[48]:
+
+
+print(g_best_position)
+
